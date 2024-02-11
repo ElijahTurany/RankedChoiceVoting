@@ -1,12 +1,8 @@
 First Choice,Second Choice,Third Choice,VoterID
-Dalinar Kholin,Jasnah Kholin,Renarin Kholin,1001
-Dalinar Kholin,Jasnah Kholin,Kaladin Stormblessed,1002
-Torol Sadeas,Meridas Amaram,Shallan Davar,1003
-Torol Sadeas,Meridas Amaram,Shallan Davar,1004
-Dalinar Kholin,Jasnah Kholin,Kaladin Stormblessed,1005
-Dalinar Kholin,Jasnah Kholin,Renarin Kholin,1006
-Torol Sadeas,Meridas Amaram,Shallan Davar,1007
-Dalinar Kholin,Jasnah Kholin,Kaladin Stormblessed,1008
-Dalinar Kholin,Jasnah Kholin,Renarin Kholin,1009
-Torol Sadeas,Meridas Amaram,Renarin Kholin,1010
-
+A,B,D
+A,B,E
+A,D,C
+D,A,C
+D,A,C
+D,A,C
+F,,

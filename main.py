@@ -20,27 +20,36 @@ class candidate:
         self.eliminated = True
 
     def addVote(self,roundNum):            
-        self.votes[roundNum] += 1
-        print(self.name)
-        print(self.votes[roundNum])    
+        self.votes[roundNum] += 1   
 
 
 class BallotProccessor:
     candidates = dict()
     candidateNames = set()
     roundVotes = [0]
-    winner = None
+    numEliminated = 0
+    winner = []
+    
+    def clearBallot(self):
+        self.candidates.clear()
+        self.candidateNames.clear()
+        self.roundVotes = [0]
+        self.numEliminated = 0
+        self.winner.clear()
+
     def loadBallots(self,filename):
         #CSV file reader
         with open(filename) as csv_file:
             next(csv_file)
             csv_reader = csv.reader(csv_file, delimiter=',')
             #Adds every name in each row of csv file to candidateNames. Only unique names are accepted
+            self.candidateNames.add("")
             for row in csv_reader:
                 #Normalize Ballots
                 self.candidateNames.add(row[0])
                 self.candidateNames.add(row[1])
                 self.candidateNames.add(row[2])
+            self.candidateNames.remove("")
             print(self.candidateNames)
             #Creates a candidate object with each name and adds it to a dictionary bound to its name
             for i in self.candidateNames:
@@ -51,6 +60,7 @@ class BallotProccessor:
     
     def runRound(self,filename, roundNum):
         self.roundVotes.append(0)
+        
         #CSV file reader
         with open(filename) as csv_file:
             next(csv_file)
@@ -65,14 +75,12 @@ class BallotProccessor:
                             self.candidates[row[i]].addVote(roundNum)
                             #Increments the number of votes cast this round
                             self.roundVotes[roundNum] += 1
-                            print("Voted")
-                            for i in self.candidateNames:
-                                print(self.candidates[i].votes[0])
                             break
+            for i in self.candidateNames:
+                print(self.candidates[i].getName() + ": " + str(self.candidates[i].votes[roundNum]))            
             #Minimum votes is defined as an array because there may be a tie for lowest votes
             min = []
             #Find min, eliminate 0 votes
-            print("*")
             for i in self.candidateNames:
                 #Calculate vote percent
                 self.candidates[i].votes.append(0)
@@ -80,12 +88,14 @@ class BallotProccessor:
                 #print(len(self.candidates[i].votes))
                 self.candidates[i].votePercent[roundNum] = self.candidates[i].votes[roundNum] / self.roundVotes[roundNum]
                 if self.candidates[i].votePercent[roundNum] > .5:
-                    winner = self.candidates[i]
-                    print("p")
-                #Eliminates candidate if they got 0 votes
-                if self.candidates[i].votes[roundNum] == 0:
+                    self.winner.append(self.candidates[i])
+                #Eliminates candidate if they got 0 votes and not already eliminated
+                if (self.candidates[i].getEliminated() == True):
+                    pass
+                elif (self.candidates[i].votes[roundNum] == 0):
                     self.candidates[i].eliminate()
-                    print("Eliminated: " + self.candidates[i].getName())
+                    self.numEliminated += 1
+                    print("Eliminated: " + self.candidates[i].getName() + " (No Votes)")
                 #Adds candidate to min array if this is the first candidate checked
                 elif len(min) == 0:
                     min.append(self.candidates[i])
@@ -97,22 +107,31 @@ class BallotProccessor:
                     min.clear()
                     min.append(self.candidates[i])
 
-            #Tie Checking    
-            print("Eliminated: " + min[0].getName())
-            print(min[0].votePercent[roundNum])
+            
 
-            if self.winner != None:
-                print("Winner: " + self.winner.getName())
-                print(self.winner.votePercent[roundNum])
-            #else:
-                #self.runRound(self,filename, roundNum + 1)
-            print(self.candidates["Dalinar Kholin"].votePercent[roundNum])
+            if len(self.winner) == 1:
+                print("Winner: " + self.winner[0].getName() + " " + str(self.winner[0].votePercent[roundNum]))
+            else:
+                if (len(min) < len(self.candidates) - self.numEliminated):
+                    for i in min:
+                        i.eliminate()
+                        self.numEliminated += 1
+                        print("Eliminated: " + i.getName() + " " + str(i.votePercent[roundNum]))
+                    self.runRound(self,filename, roundNum + 1)
+                else:
+                    print("Tie:")
+                    for i in min:
+                        self.winner.append(i)
+                        print(i.getName())
 
 
               
 
 BP = BallotProccessor
 
+BP.loadBallots(BP,"SmallListBallots.csv")
+BP.clearBallot(BP)
 BP.loadBallots(BP,"TestBallot1.csv")
+#BP.loadBallots(BP,"LargeListBallots.csv")
 
 c = candidate("test")
