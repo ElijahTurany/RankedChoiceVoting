@@ -79,7 +79,7 @@ class Candidate:
         elif(self.eliminated and self.roundEliminated < roundNum):
             returnVal += ", Previously Eliminated at Round: " + str(self.roundEliminated  + 1)
         else:
-            returnVal += ", Still in Running at Round: " + str(roundNum  + 1)
+            returnVal += ", Still in Running at Round: " + str(roundNum  + 1)   
         return(returnVal)
 
     
